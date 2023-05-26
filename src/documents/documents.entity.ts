@@ -1,13 +1,13 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Document {
+export class Documents {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
   content: string;
 
-  @Column()
-  embedding: number;
+  @Column('int', { array: true, nullable: true })
+  embedding: number[];
 }
