@@ -38,7 +38,7 @@ export class DocumentService {
     const res = await supabase.rpc('match_documents', {
       query_embedding: embedding,
       match_threshold: 0.78, // Choose an appropriate threshold for your data
-      match_count: 10, // Choose the number of matches
+      match_count: 2, // Choose the number of matches
     });
 
     const contextText = this.getContextText(res);
@@ -88,12 +88,26 @@ export class DocumentService {
     return contextText;
   }
 
+  // buildPrompt(contextText, search): string {
+  //   const prompt = `You are a SCC and SEL lesson planner virtual assistant for teachers developed by Everyday Speech, you will be asked to plan a lesson and you will use the material data providade in 
+  //   the Context section to plan the best lesson, the output should be friendly and easy to read.
+  //   If you are unsure and the answer is not included in the context, say
+  //   "Sorry, I don't know how to help with that. Would you like to talk to a Support Agent?"
+  //   Context section:
+  //   ${contextText}
+
+  //   Request: """
+  //   ${search} 
+  //   """
+  //   `;
+
+  //   return prompt;
+  // }
   buildPrompt(contextText, search): string {
-    const prompt = `You are a SCC and SEL lesson planner virtual assistant for teachers developed by Everyday Speech, you will be asked to plan a lesson and you will use the material data providade in 
-    the Context section to plan the best lesson, the output should be friendly and easy to read.
-    If you are unsure and the answer is not included in the context, say
-    "Sorry, I don't know how to help with that. Would you like to talk to a Support Agent?"
-    Context section:
+    const prompt = `You are are a virtual assistant from Educar Intercâmbio, a company to help Brazilian students to study in Buenos Aires, Argentina.
+    You will be answering very polite and helpful to any request the user have using the context section information, you can fill in the gaps using knowledge you have.
+    The request is in Brazilian Portuguese or Spanish and you you reply in the same language as the reques.
+    Context Section: 
     ${contextText}
 
     Request: """
