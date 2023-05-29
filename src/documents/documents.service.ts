@@ -14,14 +14,14 @@ export class DocumentService {
     private configService: ConfigService,
   ) {}
 
-  async processPrompt(search: string): Promise<string> {
+  async processPrompt(request: string): Promise<any> {
     const supabase = createClient(
       this.configService.get('SUPABASE_URL'),
       this.configService.get('SUPABASE_ANON_KEY'),
     );
     // Search query is passed in request payload
     // OpenAI recommends replacing newlines with spaces for best results
-    const input = search.replace(/\n/g, ' ');
+    const input = request.replace(/\n/g, ' ');
 
     const apiKey = this.configService.get('OPENAI_KEY');
     const configuration = new Configuration({ apiKey });
@@ -43,7 +43,7 @@ export class DocumentService {
 
     const contextText = this.getContextText(res);
 
-    const prompt = this.buildPrompt(contextText, search);
+    const prompt = this.buildPrompt(contextText, request);
 
     const MAX_TOKEN_COMPLETION = this.configService.get('MAX_TOKEN_COMPLETION');
     let completionResponse;
@@ -64,7 +64,7 @@ export class DocumentService {
       choices: [{ text }],
     } = completionResponse.data;
 
-    return text;
+    return { message: text }
   }
 
   getContextText(documents): string {
@@ -89,7 +89,7 @@ export class DocumentService {
   }
 
   // buildPrompt(contextText, search): string {
-  //   const prompt = `You are a SCC and SEL lesson planner virtual assistant for teachers developed by Everyday Speech, you will be asked to plan a lesson and you will use the material data providade in 
+  //   const prompt = `You are a SCC and SEL lesson planner virtual assistant for teachers developed by Everyday Speech, you will be asked to plan a lesson and you will use the material data providade in
   //   the Context section to plan the best lesson, the output should be friendly and easy to read.
   //   If you are unsure and the answer is not included in the context, say
   //   "Sorry, I don't know how to help with that. Would you like to talk to a Support Agent?"
@@ -97,21 +97,22 @@ export class DocumentService {
   //   ${contextText}
 
   //   Request: """
-  //   ${search} 
+  //   ${search}
   //   """
   //   `;
 
   //   return prompt;
   // }
-  buildPrompt(contextText, search): string {
-    const prompt = `You are are a virtual assistant from Educar Intercâmbio, a company to help Brazilian students to study in Buenos Aires, Argentina.
+  buildPrompt(contextText, request): string {
+    const prompt = `You are are a virtual assistant from Educar Intercâmbio interacting via chat with a client, a company to help Brazilian students to study in Buenos Aires, Argentina.
     You will be answering very polite and helpful to any request the user have using the context section information, you can fill in the gaps using knowledge you have.
-    The request is in Brazilian Portuguese or Spanish and you you reply in the same language as the reques.
+    The request is in Brazilian Portuguese, Spanish, or english and you reply in the same language as the request. Don't say "resposta:", "r:" or anything similar when giving an answer
+    
     Context Section: 
     ${contextText}
 
     Request: """
-    ${search} 
+    ${request} 
     """
     `;
 
