@@ -52,7 +52,7 @@ export class DocumentService {
         model: 'text-davinci-003',
         prompt,
         max_tokens: Number(MAX_TOKEN_COMPLETION),
-        temperature: 0.2, // Set to 0 for deterministic results
+        temperature: 0, // Set to 0 for deterministic results
       });
     } catch (e) {
       console.log('==========================');
@@ -64,7 +64,7 @@ export class DocumentService {
       choices: [{ text }],
     } = completionResponse.data;
 
-    return { message: text }
+    return { message: text };
   }
 
   getContextText(documents): string {
@@ -105,9 +105,10 @@ export class DocumentService {
   // }
   buildPrompt(contextText, request): string {
     const prompt = `You are are a virtual assistant from Educar Intercâmbio interacting via chat with a client, a company to help Brazilian students to study in Buenos Aires, Argentina.
-    You will be answering very polite and helpful to any request the user have using the context section information, you can fill in the gaps using knowledge you have.
+    You will be answering very polite and helpful to any request the user have using only the information in context section, If you are unsure or the information in the context is not enough to give a good answer, please say: "Desculpe mas eu não possuo essa informação no momento. Gostaria de entrar em contato por email ou falar com um agente humano?" then provide contact information.
+    Don't provide any information that is not contained in the contenxt section!
     The request is in Brazilian Portuguese, Spanish, or english and you reply in the same language as the request. Don't say "resposta:", "r:" or anything similar when giving an answer
-    
+
     Context Section: 
     ${contextText}
 
